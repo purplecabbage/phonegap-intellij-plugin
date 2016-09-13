@@ -1,3 +1,6 @@
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.Application;
@@ -10,14 +13,15 @@ import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.OrderRootType;
 import com.intellij.openapi.roots.libraries.Library;
 import com.intellij.openapi.roots.libraries.LibraryTable;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.JarFileSystem;
 import com.intellij.openapi.vfs.VirtualFileManager;
-import icons.PhoneGapIcons;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.logging.Logger;
 
 /**
@@ -34,12 +38,12 @@ public class PhoneGapInit extends AnAction {
     public void actionPerformed(AnActionEvent event) {
         Project project = event.getProject();
         try {
-            File file = new File(this.getClass().getClassLoader().getResource("/resources/cordova-init.zip").toURI());
-            String source = file.toString();
+            Path temp = Files.createTempFile("cordova-init-", ".zip");
+            Files.copy(this.getClass().getClassLoader().getResourceAsStream("/resources/cordova-init.zip"), temp, StandardCopyOption.REPLACE_EXISTING);
             String destination = project.getBasePath();
             if(project == null) return;
             ZipUtils zipUtils = new ZipUtils();
-            zipUtils.unzip(source, destination);
+            zipUtils.unzip(new FileInputStream(temp.toFile()), destination);
 
             // adding Apache Cordova as a dependency to the "app" module
             Application application = ApplicationManager.getApplication();
@@ -61,10 +65,10 @@ public class PhoneGapInit extends AnAction {
                         cordovaJarFile.getPath() + JarFileSystem.JAR_SEPARATOR), OrderRootType.CLASSES);
                 libModel.commit();
                 moduleRootManager.commit();
-                Messages.showMessageDialog(project, "PhoneGap Project successfully initialized!", "Information", PhoneGapIcons.PHONEGAP_INFO);
+                Notification info = new Notification("info", "You're rocking PhoneGap!", "PhoneGap was successfully added to your Android project", NotificationType.INFORMATION);
+                Notifications.Bus.notify(info);
+
             });
-        } catch(URISyntaxException e) {
-            e.printStackTrace();
         } catch(IOException e) {
             e.printStackTrace();
         }
