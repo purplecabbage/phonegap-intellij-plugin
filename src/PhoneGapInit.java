@@ -15,7 +15,6 @@ import com.intellij.openapi.roots.libraries.Library;
 import com.intellij.openapi.roots.libraries.LibraryTable;
 import com.intellij.openapi.vfs.JarFileSystem;
 import com.intellij.openapi.vfs.VirtualFileManager;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -48,7 +47,7 @@ public class PhoneGapInit extends AnAction {
             // adding Apache Cordova as a dependency to the "app" module
             Application application = ApplicationManager.getApplication();
             application.runWriteAction(() -> {
-                File cordovaJarFile = new File(project.getBasePath() + "/app/libs/cordova-5.2.0-dev.jar");
+                File cordovaJarFile = new File(project.getBasePath() + "/app/libs/cordova.jar");
 
                 ModuleManager moduleManager = ModuleManager.getInstance(project);
                 Module appModule = moduleManager.findModuleByName("app");
