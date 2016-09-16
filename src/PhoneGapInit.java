@@ -7,6 +7,9 @@ import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.roots.ModuleRootManager;
@@ -15,6 +18,8 @@ import com.intellij.openapi.roots.libraries.Library;
 import com.intellij.openapi.roots.libraries.LibraryTable;
 import com.intellij.openapi.vfs.JarFileSystem;
 import com.intellij.openapi.vfs.VirtualFileManager;
+import com.sun.istack.internal.NotNull;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -34,41 +39,58 @@ public class PhoneGapInit extends AnAction {
         super("Init _Cordova");
     }
 
+
     public void actionPerformed(AnActionEvent event) {
         Project project = event.getProject();
         try {
             Path temp = Files.createTempFile("cordova-init-", ".zip");
             Files.copy(this.getClass().getClassLoader().getResourceAsStream("/resources/cordova-init.zip"), temp, StandardCopyOption.REPLACE_EXISTING);
             String destination = project.getBasePath();
-            if(project == null) return;
-            ZipUtils zipUtils = new ZipUtils();
-            zipUtils.unzip(new FileInputStream(temp.toFile()), destination);
+            if (project == null) return;
 
-            // adding Apache Cordova as a dependency to the "app" module
-            Application application = ApplicationManager.getApplication();
-            application.runWriteAction(() -> {
-                File cordovaJarFile = new File(project.getBasePath() + "/app/libs/cordova.jar");
+            ProgressManager.getInstance().run(new Task.Backgroundable(project, "PhoneGap") {
+                public void onSuccess() {
+                    // adding Apache Cordova as a dependency to the "app" module
+                    Application application = ApplicationManager.getApplication();
+                    application.runWriteAction(() -> {
+                        File cordovaJarFile = new File(project.getBasePath() + "/app/libs/cordova.jar");
 
-                ModuleManager moduleManager = ModuleManager.getInstance(project);
-                Module appModule = moduleManager.findModuleByName("app");
+                        ModuleManager moduleManager = ModuleManager.getInstance(project);
+                        Module appModule = moduleManager.findModuleByName("app");
 
-                ModifiableRootModel moduleRootManager = ModuleRootManager.getInstance(appModule).getModifiableModel();
-                LibraryTable libTable = moduleRootManager.getModuleLibraryTable();
-                Library lib = libTable.createLibrary("phonegap");
+                        ModifiableRootModel moduleRootManager = ModuleRootManager.getInstance(appModule).getModifiableModel();
+                        LibraryTable libTable = moduleRootManager.getModuleLibraryTable();
+                        Library lib = libTable.createLibrary("phonegap");
 
-                if(cordovaJarFile.exists() == false) {
-                    LOGGER.info("Could not find Cordova JAR file");
+                        if (cordovaJarFile.exists() == false) {
+                            LOGGER.info("Could not find Cordova JAR file");
+                        }
+                        Library.ModifiableModel libModel = lib.getModifiableModel();
+                        libModel.addRoot(VirtualFileManager.constructUrl(JarFileSystem.PROTOCOL,
+                                cordovaJarFile.getPath() + JarFileSystem.JAR_SEPARATOR), OrderRootType.CLASSES);
+                        libModel.commit();
+                        moduleRootManager.commit();
+                        Notification info = new Notification("info", "You're rocking PhoneGap!", "PhoneGap was successfully added to your Android project", NotificationType.INFORMATION);
+                        Notifications.Bus.notify(info);
+
+                    });
                 }
-                Library.ModifiableModel libModel = lib.getModifiableModel();
-                libModel.addRoot(VirtualFileManager.constructUrl(JarFileSystem.PROTOCOL,
-                        cordovaJarFile.getPath() + JarFileSystem.JAR_SEPARATOR), OrderRootType.CLASSES);
-                libModel.commit();
-                moduleRootManager.commit();
-                Notification info = new Notification("info", "You're rocking PhoneGap!", "PhoneGap was successfully added to your Android project", NotificationType.INFORMATION);
-                Notifications.Bus.notify(info);
-
+                public void run(@NotNull ProgressIndicator progressIndicator) {
+                    try {
+                        progressIndicator.setFraction(0.10);
+                        progressIndicator.setText("90% to finish");
+                        progressIndicator.setText2("Initializing PhoneGap project");
+                        ZipUtils zipUtils = new ZipUtils();
+                        zipUtils.unzip(new FileInputStream(temp.toFile()), destination);
+                        progressIndicator.setFraction(1.0);
+                        progressIndicator.setText("finished");
+                    } catch (IOException e) {
+                        LOGGER.severe("Can't unzip cordova-init for unknown reasons");
+                    }
+                }
             });
-        } catch(IOException e) {
+
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
