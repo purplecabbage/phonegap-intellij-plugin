@@ -21,7 +21,6 @@ import com.intellij.openapi.vfs.VirtualFileManager;
 import com.sun.istack.internal.NotNull;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -38,7 +37,6 @@ public class PhoneGapInit extends AnAction {
     public PhoneGapInit() {
         super("Init _Cordova");
     }
-
 
     public void actionPerformed(AnActionEvent event) {
         Project project = event.getProject();
@@ -70,6 +68,10 @@ public class PhoneGapInit extends AnAction {
                                 cordovaJarFile.getPath() + JarFileSystem.JAR_SEPARATOR), OrderRootType.CLASSES);
                         libModel.commit();
                         moduleRootManager.commit();
+
+                        // refresh project to see changes
+                        project.getBaseDir().refresh(false, true);
+
                         Notification info = new Notification("info", "You're rocking PhoneGap!", "PhoneGap was successfully added to your Android project", NotificationType.INFORMATION);
                         Notifications.Bus.notify(info);
 
@@ -77,13 +79,8 @@ public class PhoneGapInit extends AnAction {
                 }
                 public void run(@NotNull ProgressIndicator progressIndicator) {
                     try {
-                        progressIndicator.setFraction(0.10);
-                        progressIndicator.setText("90% to finish");
-                        progressIndicator.setText2("Initializing PhoneGap project");
                         ZipUtils zipUtils = new ZipUtils();
-                        zipUtils.unzip(new FileInputStream(temp.toFile()), destination);
-                        progressIndicator.setFraction(1.0);
-                        progressIndicator.setText("finished");
+                        zipUtils.unzip(temp.toFile(), destination, progressIndicator);
                     } catch (IOException e) {
                         LOGGER.severe("Can't unzip cordova-init for unknown reasons");
                     }
