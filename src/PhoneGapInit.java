@@ -33,9 +33,27 @@ import java.util.logging.Logger;
 public class PhoneGapInit extends AnAction {
 
     private final static Logger LOGGER = Logger.getLogger(PhoneGapInit.class.getName());
+    private static boolean extracting = false;
 
     public PhoneGapInit() {
         super("Init _Cordova");
+    }
+
+    // used to disable Init PhoneGap method
+    public void update(AnActionEvent event) {
+        super.update(event);
+
+        Project project = event.getProject();
+
+        ModuleManager moduleManager = ModuleManager.getInstance(project);
+        Module appModule = moduleManager.findModuleByName("app");
+
+        ModifiableRootModel moduleRootManager = ModuleRootManager.getInstance(appModule).getModifiableModel();
+        LibraryTable libTable = moduleRootManager.getModuleLibraryTable();
+        Library phonegapLib = libTable.getLibraryByName("phonegap");
+        if(phonegapLib != null || extracting == true) {
+            event.getPresentation().setVisible(false);
+        }
     }
 
     public void actionPerformed(AnActionEvent event) {
@@ -74,11 +92,16 @@ public class PhoneGapInit extends AnAction {
 
                         Notification info = new Notification("info", "You're rocking PhoneGap!", "PhoneGap was successfully added to your Android project", NotificationType.INFORMATION);
                         Notifications.Bus.notify(info);
+                        extracting = false;
 
                     });
                 }
                 public void run(@NotNull ProgressIndicator progressIndicator) {
                     try {
+                        Notification info = new Notification("info", "Initializing PhoneGap", "Please be patient…", NotificationType.INFORMATION);
+                        info.expire();
+                        Notifications.Bus.notify(info);
+                        extracting = true;
                         ZipUtils zipUtils = new ZipUtils();
                         zipUtils.unzip(temp.toFile(), destination, progressIndicator);
                     } catch (IOException e) {

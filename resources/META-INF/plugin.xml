@@ -31,6 +31,7 @@
     <group id="PhoneGap.Menu" text="_PhoneGap" description="PhoneGap menu" popup="true" icon="PhoneGapIcons.PHONEGAP">
       <add-to-group group-id="ToolsMenu" anchor="last"/>
       <action id="PhoneGap.Init" class="PhoneGapInit" text="Initialize _Project" description="Initialize a PhoneGap project" icon="PhoneGapIcons.PHONEGAP_ACTION"/>
+      <action id="PhoneGap.Pluginstall" class="PhoneGapPlugInstall" text="Install _Plugin" description="Install PhoneGap Plugin" icon="PhoneGapIcons.PHONEGAP_ACTION"/>
     </group>
   </actions>
 </idea-plugin>

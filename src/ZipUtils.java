@@ -30,8 +30,8 @@ public class ZipUtils {
      */
     public void unzip(File zipFile, String destDirectory, ProgressIndicator progressIndicator) throws IOException {
 
-        progressIndicator.setText("Initializing PhoneGap project");
-        progressIndicator.setText2("Be patient!");
+        progressIndicator.setText("Extracting project files…");
+        progressIndicator.setText2("Thanks for your patience");
 
         long finalSize = zipFile.length();
         float currentSize = 0;
@@ -58,7 +58,7 @@ public class ZipUtils {
             zipIn.closeEntry();
             entry = zipIn.getNextEntry();
         }
-        progressIndicator.setText("PhoneGap Project successfully initialized");
+        progressIndicator.setText("Project files extracted successfully!");
         zipIn.close();
     }
 
