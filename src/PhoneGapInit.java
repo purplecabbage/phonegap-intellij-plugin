@@ -53,6 +53,8 @@ public class PhoneGapInit extends AnAction {
         Library phonegapLib = libTable.getLibraryByName("phonegap");
         if(phonegapLib != null || extracting == true) {
             event.getPresentation().setVisible(false);
+        } else {
+            event.getPresentation().setVisible(true);
         }
     }
 
