@@ -31,7 +31,8 @@
     <group id="PhoneGap.Menu" text="_PhoneGap" description="PhoneGap menu" popup="true" icon="PhoneGapIcons.PHONEGAP">
       <add-to-group group-id="ToolsMenu" anchor="last"/>
       <action id="PhoneGap.Init" class="PhoneGapInit" text="Initialize _Project" description="Initialize a PhoneGap project" icon="PhoneGapIcons.PHONEGAP_ACTION"/>
-      <action id="PhoneGap.Pluginstall" class="PhoneGapPlugInstall" text="Install _Plugin" description="Install PhoneGap Plugin" icon="PhoneGapIcons.PHONEGAP_ACTION"/>
+      <action id="PhoneGap.PluginstallFromNpm" class="PhoneGapPlugInstallFromNpm" text="Install _Plugin from npm" description="Install PhoneGap Plugin From npm" icon="PhoneGapIcons.PHONEGAP_ACTION"/>
+      <action id="PhoneGap.PluginstallFromDisk" class="PhoneGapPlugInstallFromDisk" text="Install _Plugin from filesystem" description="Install PhoneGap Plugin From Filesytem" icon="PhoneGapIcons.PHONEGAP_ACTION"/>
     </group>
   </actions>
 </idea-plugin>

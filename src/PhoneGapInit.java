@@ -39,7 +39,7 @@ public class PhoneGapInit extends AnAction {
         super("Init _Cordova");
     }
 
-    // used to disable Init PhoneGap method
+    // used to disable Init Project
     public void update(AnActionEvent event) {
         super.update(event);
 
