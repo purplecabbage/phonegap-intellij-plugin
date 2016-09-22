@@ -3,15 +3,12 @@ import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.application.Application;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.roots.ModuleRootManager;
-import com.intellij.openapi.roots.libraries.Library;
-import com.intellij.openapi.roots.libraries.LibraryTable;
+import com.intellij.openapi.roots.OrderEntry;
 import com.intellij.openapi.ui.Messages;
 
 import java.io.BufferedReader;
@@ -71,9 +68,9 @@ public abstract class PhoneGapPlugInstall extends AnAction {
 
             Notification postInstall;
             if(exitCode != 0) {
-                postInstall = new Notification("error", "Error installing plugin", output.toString(), NotificationType.ERROR);
+                postInstall = new Notification("PluginstallError", "Error installing plugin", output.toString(), NotificationType.ERROR);
             } else {
-                postInstall = new Notification("success", "Plugin installed successfully!", output.toString(), NotificationType.INFORMATION);
+                postInstall = new Notification("PluginstallSucess", "Plugin installed successfully!", output.toString(), NotificationType.INFORMATION);
             }
             Notifications.Bus.notify(postInstall);
 
@@ -115,23 +112,25 @@ public abstract class PhoneGapPlugInstall extends AnAction {
     public void update(AnActionEvent event) {
         super.update(event);
 
-        Application application = ApplicationManager.getApplication();
-        application.runReadAction(() -> {
-            Project project = event.getProject();
+        event.getPresentation().setVisible(false);
 
-            ModuleManager moduleManager = ModuleManager.getInstance(project);
-            Module appModule = moduleManager.findModuleByName("app");
+        Project project = event.getProject();
 
-            ModifiableRootModel moduleRootManager = ModuleRootManager.getInstance(appModule).getModifiableModel();
-            LibraryTable libTable = moduleRootManager.getModuleLibraryTable();
-            Library phonegapLib = libTable.getLibraryByName("phonegap");
-            if(phonegapLib == null) {
-                event.getPresentation().setVisible(false);
-            } else {
+        ModuleManager moduleManager = ModuleManager.getInstance(project);
+        Module appModule = moduleManager.findModuleByName("app");
+
+        ModifiableRootModel model = ModuleRootManager.getInstance(appModule).getModifiableModel();
+
+        if(model.getModuleLibraryTable().getLibraryByName("cordova") != null) {
+            event.getPresentation().setVisible(true);
+        }
+
+        OrderEntry[] deps  = model.getOrderEntries();
+        for(OrderEntry m : deps) {
+            if(m.getPresentableName().compareTo("cordova") == 0) {
                 event.getPresentation().setVisible(true);
             }
-
-        });
+        }
     }
 
     public abstract void install(Project project);
@@ -139,10 +138,10 @@ public abstract class PhoneGapPlugInstall extends AnAction {
     public void actionPerformed(AnActionEvent event) {
         Project project = event.getProject();
         if (checkEnvironment() == false) {
+            LOGGER.fine("checking environment");
             Messages.showMessageDialog(project, "You need to install NodeJS and plugman in order to be able to use plugins", "Error", Messages.getErrorIcon());
             return;
         }
         install(project);
-        project.getBaseDir().refresh(false, true);
     }
 }

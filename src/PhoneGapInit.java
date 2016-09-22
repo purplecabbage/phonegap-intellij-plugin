@@ -13,6 +13,7 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.roots.OrderEntry;
 import com.intellij.openapi.roots.OrderRootType;
 import com.intellij.openapi.roots.libraries.Library;
 import com.intellij.openapi.roots.libraries.LibraryTable;
@@ -43,18 +44,18 @@ public class PhoneGapInit extends AnAction {
     public void update(AnActionEvent event) {
         super.update(event);
 
+        event.getPresentation().setVisible(!extracting);
+
         Project project = event.getProject();
 
         ModuleManager moduleManager = ModuleManager.getInstance(project);
         Module appModule = moduleManager.findModuleByName("app");
 
-        ModifiableRootModel moduleRootManager = ModuleRootManager.getInstance(appModule).getModifiableModel();
-        LibraryTable libTable = moduleRootManager.getModuleLibraryTable();
-        Library phonegapLib = libTable.getLibraryByName("phonegap");
-        if(phonegapLib != null || extracting == true) {
-            event.getPresentation().setVisible(false);
-        } else {
-            event.getPresentation().setVisible(true);
+        OrderEntry[] deps  = ModuleRootManager.getInstance(appModule).getModifiableModel().getOrderEntries();
+        for(OrderEntry m : deps) {
+            if(m.getPresentableName().compareTo("cordova") == 0) {
+                event.getPresentation().setVisible(false);
+            }
         }
     }
 
@@ -78,7 +79,7 @@ public class PhoneGapInit extends AnAction {
 
                         ModifiableRootModel moduleRootManager = ModuleRootManager.getInstance(appModule).getModifiableModel();
                         LibraryTable libTable = moduleRootManager.getModuleLibraryTable();
-                        Library lib = libTable.createLibrary("phonegap");
+                        Library lib = libTable.createLibrary("cordova");
 
                         if (cordovaJarFile.exists() == false) {
                             LOGGER.info("Could not find Cordova JAR file");
@@ -92,7 +93,7 @@ public class PhoneGapInit extends AnAction {
                         // refresh project to see changes
                         project.getBaseDir().refresh(false, true);
 
-                        Notification info = new Notification("info", "You're rocking PhoneGap!", "PhoneGap was successfully added to your Android project", NotificationType.INFORMATION);
+                        Notification info = new Notification("PhoneGapInit", "You're rocking PhoneGap!", "PhoneGap was successfully added to your Android project", NotificationType.INFORMATION);
                         Notifications.Bus.notify(info);
                         extracting = false;
 
@@ -100,7 +101,7 @@ public class PhoneGapInit extends AnAction {
                 }
                 public void run(@NotNull ProgressIndicator progressIndicator) {
                     try {
-                        Notification info = new Notification("info", "Initializing PhoneGap", "Please be patient…", NotificationType.INFORMATION);
+                        Notification info = new Notification("PhoneGapInit", "Initializing PhoneGap", "Please be patient…", NotificationType.INFORMATION);
                         info.expire();
                         Notifications.Bus.notify(info);
                         extracting = true;
