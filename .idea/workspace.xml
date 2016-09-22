@@ -2,11 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="69862c06-bc94-47ab-bf01-363bd4e09cbb" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/resources/cordova-init.zip" afterPath="$PROJECT_DIR$/src/resources/cordova-init.zip" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/PhoneGapInit.java" afterPath="$PROJECT_DIR$/src/PhoneGapInit.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/PhoneGapPlugInstall.java" afterPath="$PROJECT_DIR$/src/PhoneGapPlugInstall.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/PhoneGapPlugInstallFromDisk.java" afterPath="$PROJECT_DIR$/src/PhoneGapPlugInstallFromDisk.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/PhoneGapPlugInstallFromNpm.java" afterPath="$PROJECT_DIR$/src/PhoneGapPlugInstallFromNpm.java" />
     </list>
     <ignored path="intellij-plugin.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -27,38 +24,12 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="PhoneGapPlugInstall.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/PhoneGapPlugInstall.java">
+      <file leaf-file-name="PhoneGapInit.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/PhoneGapInit.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="288">
-              <caret line="140" column="48" selection-start-line="140" selection-start-column="48" selection-end-line="140" selection-end-column="48" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="PhoneGapPlugInstallFromNpm.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/PhoneGapPlugInstallFromNpm.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="75">
-              <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="PhoneGapPlugInstallFromDisk.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/PhoneGapPlugInstallFromDisk.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="405">
-              <caret line="27" column="58" selection-start-line="27" selection-start-column="58" selection-end-line="27" selection-end-column="58" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
+            <state relative-caret-position="120">
+              <caret line="8" column="49" selection-start-line="8" selection-start-column="49" selection-end-line="8" selection-end-column="49" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -561,9 +532,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
           <caret line="34" column="4" selection-start-line="34" selection-start-column="4" selection-end-line="34" selection-end-column="88" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -599,9 +568,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="165">
           <caret line="40" column="0" selection-start-line="40" selection-start-column="0" selection-end-line="40" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -627,9 +594,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="405">
           <caret line="52" column="73" selection-start-line="52" selection-start-column="73" selection-end-line="52" selection-end-column="73" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -655,9 +620,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -824,16 +787,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/PhoneGapInit.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-789">
-          <caret line="44" column="28" selection-start-line="44" selection-start-column="28" selection-end-line="44" selection-end-column="28" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/PhoneGapPlugInstallFromDisk.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="405">
@@ -841,6 +794,14 @@
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/PhoneGapPlugInstallFromNpm.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="1" column="29" selection-start-line="1" selection-start-column="29" selection-end-line="1" selection-end-column="29" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -854,13 +815,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/PhoneGapPlugInstallFromNpm.java">
+    <entry file="file://$PROJECT_DIR$/src/PhoneGapInit.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+        <state relative-caret-position="120">
+          <caret line="8" column="49" selection-start-line="8" selection-start-column="49" selection-end-line="8" selection-end-column="49" />
+          <folding />
         </state>
       </provider>
     </entry>
