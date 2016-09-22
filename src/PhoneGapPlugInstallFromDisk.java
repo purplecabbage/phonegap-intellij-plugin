@@ -18,12 +18,15 @@ public class PhoneGapPlugInstallFromDisk extends PhoneGapPlugInstall {
         fcd.setTitle("Select PhoneGap Plugin");
         VirtualFile pluginDir = FileChooser.chooseFile(fcd, project, null);
         if (pluginDir != null) {
-            Notification info = new Notification("info", "Installing plugin " + pluginDir.getPath(),
+            Notification info = new Notification("PlugmanInstall", "Installing plugin ",
                     "Please be patient…", NotificationType.INFORMATION);
             info.expire();
-            Notifications.Bus.notify(info, project);
-            executeCommand(String.format("plugman install --platform android --plugin %s --project %s",
-                    pluginDir.getPath(), project.getBasePath()));
+            Notifications.Bus.notify(info);
+            new Thread(() -> {
+                executeCommand(String.format("plugman install --platform android --plugin %s --project %s",
+                        pluginDir.getPath(), project.getBasePath()));
+                project.getBaseDir().refresh(false, true);
+            }).start();
         }
     }
 }
