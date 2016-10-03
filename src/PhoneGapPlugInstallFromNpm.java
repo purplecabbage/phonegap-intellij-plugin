@@ -4,6 +4,9 @@ import com.intellij.notification.Notifications;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by anis on 9/16/16.
  */
@@ -19,7 +22,23 @@ public class PhoneGapPlugInstallFromNpm extends PhoneGapPlugInstall {
             info.expire();
             Notifications.Bus.notify(info);
             new Thread(() -> {
-                executeCommand(String.format("plugman install --platform android --plugin %s --project %s", pluginName, project.getBasePath()));
+                List<String> cmd = new ArrayList<String>();
+                cmd.add("plugman");
+                cmd.add("install");
+                cmd.add("--platform");
+                cmd.add("android");
+                cmd.add("--plugin");
+                cmd.add(pluginName);
+                cmd.add("--project");
+                cmd.add(project.getBasePath());
+                int exitCode = runProcess(cmd);
+                Notification postInstall;
+                if(exitCode != 0) {
+                    postInstall = new Notification("PluginstallError", "Error!", "Error installing plugin", NotificationType.ERROR);
+                } else {
+                    postInstall = new Notification("PluginstallSucess", "Success!", "Plugin Installed successfully!", NotificationType.INFORMATION);
+                }
+                Notifications.Bus.notify(postInstall);
                 project.getBaseDir().refresh(false, true);
             }).start();
         }

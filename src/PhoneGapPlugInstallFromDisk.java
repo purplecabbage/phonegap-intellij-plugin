@@ -1,3 +1,4 @@
+import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
@@ -5,6 +6,9 @@ import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by anis on 9/21/16.
@@ -23,8 +27,23 @@ public class PhoneGapPlugInstallFromDisk extends PhoneGapPlugInstall {
             info.expire();
             Notifications.Bus.notify(info);
             new Thread(() -> {
-                executeCommand(String.format("plugman install --platform android --plugin %s --project %s",
-                        pluginDir.getPath(), project.getBasePath()));
+                List<String> cmd = new ArrayList<>();
+                cmd.add("plugman");
+                cmd.add("install");
+                cmd.add("--platform");
+                cmd.add("android");
+                cmd.add("--plugin");
+                cmd.add(pluginDir.getPath());
+                cmd.add("--project");
+                cmd.add(project.getBasePath());
+                int exitCode = runProcess(cmd);
+                Notification postInstall;
+                if(exitCode != 0) {
+                    postInstall = new Notification("PluginstallError", "Error!", "Error installing plugin", NotificationType.ERROR);
+                } else {
+                    postInstall = new Notification("PluginstallSucess", "Success!", "Plugin installed successfully!", NotificationType.INFORMATION);
+                }
+                Notifications.Bus.notify(postInstall);
                 project.getBaseDir().refresh(false, true);
             }).start();
         }

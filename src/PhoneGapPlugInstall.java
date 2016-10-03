@@ -12,8 +12,9 @@ import com.intellij.openapi.roots.OrderEntry;
 import com.intellij.openapi.ui.Messages;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -31,79 +32,67 @@ public abstract class PhoneGapPlugInstall extends AnAction {
         return OS;
     }
 
-    protected void executeCommand(String command) {
-        StringBuffer output = new StringBuffer();
-
-        Process p;
-
+    protected int runProcess(List<String> command) {
+        int exitCode = 69;
         try {
-            p = Runtime.getRuntime().exec(command);
+            ProcessBuilder pb = new ProcessBuilder(command);
+            pb.redirectErrorStream(true);
+            Process process = pb.start();
 
-            new Thread(() -> {
-                BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                String line;
-                try {
-                    while ((line = input.readLine()) != null) {
-                        System.out.println(line);
-                        output.append(line + "\n");
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+            StringBuilder output = new StringBuilder();
+            BufferedReader br = null;
+            String line;
+            try {
+                br = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                while((line = br.readLine()) != null) {
+                    output.append(line + System.getProperty("line.separator"));
                 }
-            }).start();
-
-            new Thread(() -> {
-                    BufferedReader input = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-                    String line;
-                    try {
-                        while ((line = input.readLine()) != null) {
-                            output.append(line + "\n");
-                        }
-                    } catch(IOException e) {
-                        e.printStackTrace();
-                    }
-            }).start();
-
-            int exitCode = p.waitFor();
-
-            Notification postInstall;
-            if(exitCode != 0) {
-                postInstall = new Notification("PluginstallError", "Error installing plugin", output.toString(), NotificationType.ERROR);
-            } else {
-                postInstall = new Notification("PluginstallSucess", "Plugin installed successfully!", output.toString(), NotificationType.INFORMATION);
+            } finally {
+                br.close();
             }
-            Notifications.Bus.notify(postInstall);
 
-        } catch (Exception e) {
+            exitCode = process.waitFor();
+            Notification result;
+            if(exitCode != 0) {
+                result = new Notification("ExecuteCmdError", "Error!", "Command Output "+output.toString()+" ExitCode: "+exitCode, NotificationType.ERROR);
+            } else {
+                result = new Notification("ExecuteCmdSuccess", "Success!", "Command Output "+output.toString()+" ExitCode: "+exitCode, NotificationType.INFORMATION);
+            }
+            result.expire();
+            Notifications.Bus.notify(result);
+
+
+        } catch(Exception e) {
             e.printStackTrace();
         }
+        return exitCode;
+
     }
 
     protected boolean checkEnvironment() {
-        Process node, plugman;
 
-        String nodeCmdStr = "which node",
-                plugmanCmdStr = "which plugman";
+        List<String> nodeCmd = new ArrayList<>(),
+                plugmanCmd = new ArrayList<>();
 
         if (getOsName().startsWith("Windows")) {
-            nodeCmdStr = "where node";
-            plugmanCmdStr = "where plugman";
+            nodeCmd.add("where");
+            plugmanCmd.add("where");
+        } else {
+            nodeCmd.add("which");
+            plugmanCmd.add("which");
+        }
+        nodeCmd.add("node");
+        plugmanCmd.add("which");
+        int exitCode = runProcess(nodeCmd);
+        if (exitCode != 0) {
+            LOGGER.severe("Node not found!");
+            return false;
         }
 
-        try {
-            node = Runtime.getRuntime().exec(nodeCmdStr);
-            node.waitFor();
-            if (node.exitValue() != 0) {
-                return false;
-            }
-
-            plugman = Runtime.getRuntime().exec(plugmanCmdStr);
-            plugman.waitFor();
-            if (plugman.exitValue() != 0) {
-                return false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        exitCode = runProcess(plugmanCmd);
+        if (exitCode != 0) {
+            LOGGER.severe("plugman not found!");
+            return false;
         }
         return true;
     }
@@ -139,7 +128,7 @@ public abstract class PhoneGapPlugInstall extends AnAction {
         Project project = event.getProject();
         if (checkEnvironment() == false) {
             LOGGER.fine("checking environment");
-            Messages.showMessageDialog(project, "You need to install NodeJS and plugman in order to be able to use plugins", "Error", Messages.getErrorIcon());
+            Messages.showMessageDialog(project, "You need to install NodeJS and plugman in order to be able to use plugins. If you are on Mac OS X make sure you run the following: `sudo launchctl config user path $PATH`", "Error", Messages.getErrorIcon());
             return;
         }
         install(project);
