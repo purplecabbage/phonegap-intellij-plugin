@@ -82,7 +82,7 @@ public abstract class PhoneGapPlugInstall extends AnAction {
             plugmanCmd.add("which");
         }
         nodeCmd.add("node");
-        plugmanCmd.add("which");
+        plugmanCmd.add("plugman");
         int exitCode = runProcess(nodeCmd);
         if (exitCode != 0) {
             LOGGER.severe("Node not found!");
